@@ -59,8 +59,7 @@ class ObjectIndexerSubscriber implements EventSubscriber
     public function postPersist(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
-        $objectChangeset = $args->getObjectManager()->getUnitOfWork()->getEntityChangeSet($object);
-        if ($object instanceof IndexableObjectInterface && count($objectChangeset) > 1) {
+        if ($object instanceof IndexableObjectInterface) {
             $this->indexer->indexObject($object);
         }
     }
