@@ -11,6 +11,7 @@
         <parameter key='flex_model.elasticsearch.aggregation_result_parser.class'>FlexModel\FlexModelElasticsearchBundle\Elasticsearch\AggregationResultParser</parameter>
         <parameter key='flex_model.elasticsearch.filter.form.type.class'>FlexModel\FlexModelElasticsearchBundle\Form\Type\FilterFormType</parameter>
         <parameter key='flex_model.elasticsearch.subscriber.object_indexer.class'>FlexModel\FlexModelElasticsearchBundle\EventListener\ObjectIndexerSubscriber</parameter>
+        <parameter key='flex_model.elasticsearch.subscriber.index_object.class'>FlexModel\FlexModelElasticsearchBundle\EventListener\IndexObjectSubscriber</parameter>
     </parameters>
 
     <services>
@@ -24,8 +25,8 @@
 
         <service id='flex_model.elasticsearch.indexer' class='%flex_model.elasticsearch.indexer.class%'>
             <argument type='service' id='flex_model.elasticsearch.client'/>
-            <argument type='service' id='flexmodel'/>
             <argument>%flex_model.elasticsearch.index.name%</argument>
+            <argument type='service' id='event_dispatcher'/>
         </service>
 
         <service id='flex_model.elasticsearch.filtered_searcher' class='%flex_model.elasticsearch.filtered_searcher.class%'>
@@ -48,6 +49,12 @@
             <tag name='doctrine.event_subscriber' connection='default'/>
 
             <argument type='service' id='flex_model.elasticsearch.indexer'/>
+        </service>
+
+        <service id='flex_model.elasticsearch.subscriber.index_object' class='%flex_model.elasticsearch.subscriber.index_object.class%'>
+            <tag name='kernel.event_subscriber'/>
+
+            <argument type='service' id='flexmodel'/>
         </service>
     </services>
 </container>
