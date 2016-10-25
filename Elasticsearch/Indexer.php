@@ -3,13 +3,14 @@
 namespace FlexModel\FlexModelElasticsearchBundle\Elasticsearch;
 
 use Elasticsearch\Client;
-use FlexModel\FlexModel;
 use FlexModel\FlexModelElasticsearchBundle\Elasticsearch\Model\IndexableObjectInterface;
+use FlexModel\FlexModelElasticsearchBundle\Event\IndexObjectEvent;
+use FlexModel\FlexModelElasticsearchBundle\FlexModelElasticsearchEvents;
 use ReflectionClass;
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Indexer.
+ * Handles indexing of objects to Elasticsearch through the Elasticsearch client.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
@@ -23,13 +24,6 @@ class Indexer
     private $client;
 
     /**
-     * The FlexModel instance.
-     *
-     * @var FlexModel
-     */
-    private $flexModel;
-
-    /**
      * The name of the Elasticsearch index.
      *
      * @var string
@@ -37,17 +31,24 @@ class Indexer
     private $indexName;
 
     /**
+     * The event dispatcher instance.
+     *
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * Constructs a new Indexer instance.
      *
-     * @param Client    $client
-     * @param FlexModel $flexModel
-     * @param string    $indexName
+     * @param Client                   $client
+     * @param string                   $indexName
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(Client $client, FlexModel $flexModel, $indexName)
+    public function __construct(Client $client, $indexName, EventDispatcherInterface $eventDispatcher)
     {
         $this->client = $client;
-        $this->flexModel = $flexModel;
         $this->indexName = $indexName;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -67,12 +68,11 @@ class Indexer
             'body' => array(),
         );
 
-        $fieldNames = $this->flexModel->getFieldNamesByView($objectName, 'searchindex');
-        foreach ($fieldNames as $fieldName) {
-            $getter = 'get'.Container::camelize($fieldName);
+        $event = new IndexObjectEvent($object);
 
-            $parameters['body'][$fieldName] = $object->$getter();
-        }
+        $this->eventDispatcher->dispatch(FlexModelElasticsearchEvents::INDEX_OBJECT, $event);
+
+        $parameters['body'] = $event->getBody();
 
         $this->client->index($parameters);
     }
