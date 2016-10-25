@@ -49,5 +49,11 @@
 
             <argument type='service' id='flex_model.elasticsearch.indexer'/>
         </service>
+
+        <service id='flex_model.elasticsearch.subscriber.index_object' class='%flex_model.elasticsearch.subscriber.index_object.class%'>
+            <tag name='kernel.event_subscriber'/>
+
+            <argument type='service' id='flexmodel'/>
+        </service>
     </services>
 </container>
