@@ -6,7 +6,6 @@ use FlexModel\FlexModel;
 use ReflectionClass;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -65,8 +64,6 @@ class FilterFormType extends AbstractType
                                 'data-count' => $aggregationResult->getCount(),
                             );
                         };
-                    } else {
-                        $fieldType = IntegerType::class;
                     }
 
                     $builder->add($fieldConfiguration['name'], $fieldType, $fieldOptions);
