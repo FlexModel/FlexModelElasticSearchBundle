@@ -6,7 +6,6 @@ use FlexModel\FlexModel;
 use ReflectionClass;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -48,16 +47,8 @@ class FilterFormType extends AbstractType
                 foreach ($formConfiguration['fields'] as $formFieldConfiguration) {
                     $fieldConfiguration = $this->flexModel->getField($objectName, $formFieldConfiguration['name']);
 
-                    $label = $fieldConfiguration['label'];
-                    if (isset($formFieldConfiguration['label'])) {
-                        $label = $formFieldConfiguration['label'];
-                    }
-
-                    $fieldType = ChoiceType::class;
-                    $fieldOptions = array(
-                        'label' => $label,
-                        'required' => false,
-                    );
+                    $fieldType = $this->getFieldType($formFieldConfiguration, $fieldConfiguration);
+                    $fieldOptions = $this->getFieldOptions($formConfiguration, $fieldConfiguration);
 
                     if (isset($options['aggregation_results'][$formFieldConfiguration['name']])) {
                         $fieldOptions['choices'] = $options['aggregation_results'][$formFieldConfiguration['name']];
@@ -73,10 +64,6 @@ class FilterFormType extends AbstractType
                                 'data-count' => $aggregationResult->getCount(),
                             );
                         };
-                        $fieldOptions['multiple'] = true;
-                        $fieldOptions['expanded'] = true;
-                    } else {
-                        $fieldType = IntegerType::class;
                     }
 
                     $builder->add($fieldConfiguration['name'], $fieldType, $fieldOptions);
@@ -95,5 +82,41 @@ class FilterFormType extends AbstractType
         $resolver->setDefault('validation_groups', false);
         $resolver->setDefault('form_name', null);
         $resolver->setDefault('aggregation_results', array());
+    }
+
+    /**
+     * Returns the field type.
+     *
+     * @param array $formFieldConfiguration
+     * @param array $fieldConfiguration
+     *
+     * @return string
+     */
+    protected function getFieldType(array $formFieldConfiguration, array $fieldConfiguration)
+    {
+        return ChoiceType::class;
+    }
+
+    /**
+     * Returns the field options.
+     *
+     * @param array $formFieldConfiguration
+     * @param array $fieldConfiguration
+     *
+     * @return array
+     */
+    protected function getFieldOptions(array $formFieldConfiguration, array $fieldConfiguration)
+    {
+        $label = $fieldConfiguration['label'];
+        if (isset($formFieldConfiguration['label'])) {
+            $label = $formFieldConfiguration['label'];
+        }
+
+        return array(
+            'label' => $label,
+            'required' => false,
+            'multiple' => true,
+            'expanded' => true,
+        );
     }
 }

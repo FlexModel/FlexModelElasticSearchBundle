@@ -158,7 +158,7 @@ class AggregationResultParser
      */
     private function getAggregationResultLabel(array $formFieldConfiguration, array $fieldConfiguration, $value)
     {
-        $label = '';
+        $label = $value;
         if (isset($fieldConfiguration['datatype']) && $fieldConfiguration['datatype'] === 'BOOLEAN') {
             $label = 'No';
             if ($value === 'true') {
