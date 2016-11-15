@@ -118,9 +118,7 @@ class FilteredSearcher
                         break;
                     case 'SET':
                     case 'VARCHAR':
-                        if (isset($fieldConfiguration['options'])) {
-                            $aggregation = new TermsAggregation($fieldConfiguration['name'], $fieldConfiguration['name']);
-                        }
+                        $aggregation = new TermsAggregation($fieldConfiguration['name'], $fieldConfiguration['name']);
                         break;
                 }
 
