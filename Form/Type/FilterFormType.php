@@ -53,18 +53,17 @@ class FilterFormType extends AbstractType
 
                     if (isset($options['aggregation_results'][$formFieldConfiguration['name']])) {
                         $fieldOptions['choices'] = $options['aggregation_results'][$formFieldConfiguration['name']];
-                        $fieldOptions['choice_label'] = function($aggregationResult) {
+                        $fieldOptions['choice_label'] = function ($aggregationResult) {
                             return $aggregationResult->getLabel();
                         };
-                        $fieldOptions['choice_value'] = function($aggregationResult) {
-                            if($aggregationResult instanceof AggregationResult)
-                            {
+                        $fieldOptions['choice_value'] = function ($aggregationResult) {
+                            if ($aggregationResult instanceof AggregationResult) {
                                 return $aggregationResult->getValue();
                             }
 
                             return $aggregationResult;
                         };
-                        $fieldOptions['choice_attr'] = function($aggregationResult) {
+                        $fieldOptions['choice_attr'] = function ($aggregationResult) {
                             return array(
                                 'disabled' => $aggregationResult->getCount() < 1,
                                 'data-count' => $aggregationResult->getCount(),
