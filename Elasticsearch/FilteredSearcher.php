@@ -119,6 +119,7 @@ class FilteredSearcher
                     case 'SET':
                     case 'VARCHAR':
                         $aggregation = new TermsAggregation($fieldConfiguration['name'], $fieldConfiguration['name']);
+                        $aggregation->addParameter('size', 0);
                         break;
                 }
 
